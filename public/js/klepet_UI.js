@@ -12,6 +12,10 @@ function divElementHtmlTekst(sporocilo) {
   return $('<div></div>').html('<i>' + sporocilo + '</i>');
 }
 
+function divElementSlikaTekst(sporocilo) {
+  return $('<div></div>').html(sporocilo);
+}
+
 function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
   sporocilo = dodajSmeske(sporocilo);
@@ -28,6 +32,57 @@ function procesirajVnosUporabnika(klepetApp, socket) {
     $('#sporocila').append(divElementEnostavniTekst(sporocilo));
     $('#sporocila').scrollTop($('#sporocila').prop('scrollHeight'));
   }
+  
+  var dobi = /(https?:\/\/\S+(\.png|\.jpg|\.gif))/g
+  var novoSporocilo = sporocilo;
+  
+  if (novoSporocilo.match(dobi)) 
+  {
+    var geturl = new RegExp(/(https?:\/\/\S+(\.png|\.jpg|\.gif))/g ,"g");
+
+    var stevilo = novoSporocilo.match(geturl).length;
+    //console.log("Stevilo linkov: "+stevilo);
+
+    var povezave = novoSporocilo.match(geturl);
+    //console.log("Linki: " + povezave);
+
+    var povezave1 = String(povezave);
+   
+
+    var res = povezave1.split(",");
+    //console.log("Linki drugi: " + res);
+
+    var string = "";
+    for (var i = 0; i < res.length; i++) 
+    {
+      if ((!(res[i].match("http://sandbox.lavbic.net/teaching/OIS/gradivo/wink.png")))&&
+          (!(res[i].match("http://sandbox.lavbic.net/teaching/OIS/gradivo/smiley.png")))&&
+          (!(res[i].match("http://sandbox.lavbic.net/teaching/OIS/gradivo/like.png")))&&
+          (!(res[i].match("http://sandbox.lavbic.net/teaching/OIS/gradivo/kiss.png")))&&
+          (!(res[i].match("http://sandbox.lavbic.net/teaching/OIS/gradivo/sad.png")))) 
+      {
+        string = string +" "+String(res[i]);
+      }
+      
+    };
+
+    //console.log("Rezultat: " + res);
+
+
+
+    var exp = /(https?:\/\/\S+(\.png|\.jpg|\.gif))/g
+
+    var novoSporocilo = string.replace(exp,'<img src="$1" style="margin-left: 20px; width: 200px;">'); 
+
+    klepetApp.posljiSporocilo(trenutniKanal, novoSporocilo);
+    $('#sporocila').append(divElementSlikaTekst(novoSporocilo));
+    $('#sporocila').scrollTop($('#sporocila').prop('scrollHeight'));
+
+    //console.log(novoSporocilo);
+
+    //console.log("Slika!");
+  };
+  
 
   $('#poslji-sporocilo').val('');
 }
@@ -74,7 +129,18 @@ $(document).ready(function() {
   });
 
   socket.on('sporocilo', function (sporocilo) {
-    var novElement = divElementEnostavniTekst(sporocilo.besedilo);
+    
+    var snow = sporocilo.besedilo;
+
+    if (snow.match("<img src=")) 
+    {
+      var novElement = divElementSlikaTekst(sporocilo.besedilo);
+    }
+    else
+    {
+      var novElement = divElementEnostavniTekst(sporocilo.besedilo);
+    } 
+    
     $('#sporocila').append(novElement);
   });
   
