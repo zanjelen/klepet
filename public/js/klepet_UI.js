@@ -35,6 +35,61 @@ function procesirajVnosUporabnika(klepetApp, socket) {
   
   var dobi = /(https?:\/\/\S+(\.png|\.jpg|\.gif))/g
   var novoSporocilo = sporocilo;
+
+  var posnetek = /(https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?/g;
+  var novoSporocilo2 = novoSporocilo;
+
+  //console.log(novoSporocilo2.match(posnetek));
+
+  
+
+  if (novoSporocilo2.match(posnetek)) 
+  {
+    //console.log("zaznal youtube" + novoSporocilo2);
+
+    //console.log("Slika1");
+
+    var geturl1 = new RegExp(/(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?/g,"g");
+
+    var stevilo = novoSporocilo2.match(geturl1).length;
+    //console.log("Stevilo linkov: "+stevilo);
+
+    var povezave = novoSporocilo2.match(geturl1);
+    //console.log("Linki: " + povezave);
+
+    var povezave1 = String(povezave);
+   
+
+    var res = povezave1.split(",");
+    //console.log("Linki drugi: " + res);
+
+    
+
+    var string = "";
+
+    for (var i = 0; i < res.length; i++) 
+    {
+        temp = String(res[i]);
+        var temp2 = temp.split("watch?v=");
+        var stringTemp = '<iframe src="https://www.youtube.com/embed/'+String(temp2[1])+'" style="margin-left: 20px; width: 200px; height:150px;" allowfullscreen></iframe>'
+        
+        string = string +" "+stringTemp;   
+      
+    }
+
+    //console.log("Rezultat: " + string);
+
+    var novoSporocilo2 = string; 
+
+    klepetApp.posljiSporocilo(trenutniKanal, novoSporocilo2);
+    $('#sporocila').append(divElementSlikaTekst(novoSporocilo2));
+    $('#sporocila').scrollTop($('#sporocila').prop('scrollHeight'));
+
+    console.log(novoSporocilo2);
+
+    //console.log("YouTube!");
+
+  }
   
   if (novoSporocilo.match(dobi)) 
   {
@@ -132,7 +187,11 @@ $(document).ready(function() {
     
     var snow = sporocilo.besedilo;
 
+<<<<<<< HEAD
     if (snow.match("<img src=")) 
+=======
+    if (snow.match("<img src=") || snow.match("<iframe src=")) 
+>>>>>>> youtube
     {
       var novElement = divElementSlikaTekst(sporocilo.besedilo);
     }
