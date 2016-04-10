@@ -12,6 +12,10 @@ function divElementHtmlTekst(sporocilo) {
   return $('<div></div>').html('<i>' + sporocilo + '</i>');
 }
 
+function divElementSlikaTekst(sporocilo) {
+  return $('<div></div>').html(sporocilo);
+}
+
 function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
   sporocilo = dodajSmeske(sporocilo);
@@ -28,6 +32,58 @@ function procesirajVnosUporabnika(klepetApp, socket) {
     $('#sporocila').append(divElementEnostavniTekst(sporocilo));
     $('#sporocila').scrollTop($('#sporocila').prop('scrollHeight'));
   }
+  
+  var posnetek = /(https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?/g;
+  var novoSporocilo2 = sporocilo;
+  
+  if (novoSporocilo2.match(posnetek)) 
+  {
+    console.log("zaznal youtube" + novoSporocilo2);
+
+    //console.log("Slika1");
+
+    var geturl1 = new RegExp(/(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?/g,"g");
+
+    var stevilo = novoSporocilo2.match(geturl1).length;
+    //console.log("Stevilo linkov: "+stevilo);
+
+    var povezave = novoSporocilo2.match(geturl1);
+    //console.log("Linki: " + povezave);
+
+    var povezave1 = String(povezave);
+   
+
+    var res = povezave1.split(",");
+    //console.log("Linki drugi: " + res);
+
+    
+
+    var string = "";
+
+    for (var i = 0; i < res.length; i++) 
+    {
+        temp = String(res[i]);
+        var temp2 = temp.split("watch?v=");
+        var stringTemp = '<iframe src="https://www.youtube.com/embed/'+String(temp2[1])+'" style="margin-left: 20px; width: 200px; height:150px;" allowfullscreen></iframe>'
+        
+        string = string +" "+stringTemp;   
+      
+    }
+
+    //console.log("Rezultat: " + string);
+
+    var novoSporocilo2 = string; 
+
+    klepetApp.posljiSporocilo(trenutniKanal, novoSporocilo2);
+    $('#sporocila').append(divElementSlikaTekst(novoSporocilo2));
+    $('#sporocila').scrollTop($('#sporocila').prop('scrollHeight'));
+
+    //console.log(novoSporocilo2);
+
+    //console.log("YouTube!");
+
+  }
+  
 
   $('#poslji-sporocilo').val('');
 }
@@ -74,7 +130,18 @@ $(document).ready(function() {
   });
 
   socket.on('sporocilo', function (sporocilo) {
-    var novElement = divElementEnostavniTekst(sporocilo.besedilo);
+    
+    var snow = sporocilo.besedilo;
+
+    if (snow.match("<img src=") || snow.match("<iframe src=")) 
+    {
+      var novElement = divElementSlikaTekst(sporocilo.besedilo);
+    }
+    else
+    {
+      var novElement = divElementEnostavniTekst(sporocilo.besedilo);
+    } 
+    
     $('#sporocila').append(novElement);
   });
   
