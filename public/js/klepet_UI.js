@@ -187,11 +187,9 @@ $(document).ready(function() {
     
     var snow = sporocilo.besedilo;
 
-<<<<<<< HEAD
-    if (snow.match("<img src=")) 
-=======
+
     if (snow.match("<img src=") || snow.match("<iframe src=")) 
->>>>>>> youtube
+
     {
       var novElement = divElementSlikaTekst(sporocilo.besedilo);
     }
@@ -205,6 +203,8 @@ $(document).ready(function() {
   
   socket.on('kanali', function(kanali) {
     $('#seznam-kanalov').empty();
+    
+    //fdsadsafdsfsfsa
 
     for(var kanal in kanali) {
       kanal = kanal.substring(1, kanal.length);
