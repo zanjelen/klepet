@@ -99,6 +99,24 @@ $(document).ready(function() {
     for (var i=0; i < uporabniki.length; i++) {
       $('#seznam-uporabnikov').append(divElementEnostavniTekst(uporabniki[i]));
     }
+    
+    
+    $('#seznam-uporabnikov div').click(function() {
+      console.log("Izbira uporabnika za hitro sporocilo");
+
+      
+      var child = $(this).text();
+
+      console.log(child);
+
+      var vrstica = '/zasebno '+'"'+child+'"';   
+      console.log(vrstica);
+
+      $('#poslji-sporocilo').val(vrstica);
+      $('#poslji-sporocilo').focus();
+
+    });
+    
   });
 
   setInterval(function() {
